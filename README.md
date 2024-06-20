@@ -50,7 +50,8 @@ Install dependencies
 ```
 envfile setup
 ```bash
-DATABASE_URL=""
+MONGO_URI=mongodb+srv://talativraj0805:49DHJub6f2FAcFDg@cluster0.klekg5z.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+PORT=3000
 
 
 ```
