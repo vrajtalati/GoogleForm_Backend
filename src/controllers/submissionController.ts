@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { Submission } from '../models/submissionModel';
 
-
-
+// Ping route to check server status
 export const ping = (req: Request, res: Response) => {
   res.json(true);
 };
 
+// Route to submit a new submission
 export const submit = async (req: Request, res: Response) => {
   try {
     const newSubmission = new Submission(req.body);
@@ -17,6 +17,7 @@ export const submit = async (req: Request, res: Response) => {
   }
 };
 
+// Route to read a specific submission by index
 export const read = async (req: Request, res: Response) => {
   try {
     const index = parseInt(req.query.index as string, 10);
@@ -30,12 +31,12 @@ export const read = async (req: Request, res: Response) => {
     } else {
       res.status(404).json({ error: 'Submission not found' });
     }
-  } catch (error:any) {
+  } catch (error: any) {
     res.status(500).json({ error: 'Error reading submissions', details: error.message });
   }
 };
 
-
+// Route to update a specific submission by index
 export const update = async (req: Request, res: Response) => {
   try {
     const index = parseInt(req.query.index as string, 10);
@@ -59,7 +60,7 @@ export const update = async (req: Request, res: Response) => {
   }
 };
 
-
+// Route to delete a specific submission by index
 export const remove = async (req: Request, res: Response) => {
   try {
     const index = parseInt(req.query.index as string, 10);
@@ -80,5 +81,25 @@ export const remove = async (req: Request, res: Response) => {
     }
   } catch (error: any) {
     res.status(500).json({ error: 'Error deleting submission', details: error.message });
+  }
+};
+
+// Route to search for submissions by email
+export const search = async (req: Request, res: Response) => {
+  try {
+    const email = req.query.email as string;
+    if (!email) {
+      res.status(400).json({ error: 'Email query parameter is required' });
+      return;
+    }
+
+    const submissions = await Submission.find({ email: { $regex: new RegExp(email, 'i') } });
+    if (submissions.length > 0) {
+      res.status(200).json({ success: true, submissions, total_count: submissions.length });
+    } else {
+      res.status(404).json({ error: 'No submissions found with the provided email' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: 'Error searching submissions', details: error.message });
   }
 };
